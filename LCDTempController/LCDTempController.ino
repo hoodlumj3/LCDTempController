@@ -4,6 +4,7 @@
  Author:	hoodlumj3
 */
 
+#include "modules\functionEnable\functionEnable.h"
 #include <OneWire.h>                       // library to access DS18B20
 #include <DallasTemperature.h>             // library to support DS18B20
 #include <Wire.h>                          // library for communicating to I2C devices
@@ -20,8 +21,15 @@ hd44780_I2Cexp lcd; // declare lcd object: auto locate & auto configure expander
 
 //int IOL; // initialize the LDR pin name as a 16-bit value
 
+unsigned long currentMillis = 0;
+unsigned long lastMillis = 0;
+unsigned long loopcount = 0;
 
-byte lcdchar_Verticl[8] = {
+
+functionEnable scheduler;
+
+
+byte lcdchar_Vertical[8] = {
 	0b00100,
 	0b00100,
 	0b00100,
@@ -94,7 +102,7 @@ byte lcdchar_CornerBR[8] = {
 
 
 typedef enum {
-	lcdVertical, 
+	lcdVertical = 1, 
 	lcdHorizontal,
 	lcdCornerTL,
 	lcdCornerTR,
@@ -102,10 +110,11 @@ typedef enum {
 	lcdCornerBR
 } lcdCustomCharacters_Type;
 
-void createCustomCharacters()
+
+void lcdCreateCustomCharacters()
 {
 
-	lcd.createChar(lcdVertical, lcdchar_Verticl);
+	lcd.createChar(lcdVertical, lcdchar_Vertical);
 
 	lcd.createChar(lcdHorizontal, lcdchar_Horizontal);
 
@@ -117,14 +126,95 @@ void createCustomCharacters()
 
 	lcd.createChar(lcdCornerBR, lcdchar_CornerBR);
 
+}
+
+
+void lcdDisplayInitialMessage()
+{
+	const char abc[20] = { lcdCornerTL, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdCornerTR };
+	const char abd[20] = { lcdVertical, ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', lcdVertical };
+	const char abe[20] = { lcdCornerBL, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdHorizontal, lcdCornerBR };
+
+	lcd.setCursor(0, 0);
+
+	lcd.write(abc, sizeof(abc));
+
+
+	lcd.setCursor(0, 1);
+
+	lcd.write(abd, sizeof(abd));
+
+
+	lcd.setCursor(0, 2);
+
+	lcd.write(abd, sizeof(abd));
+
+
+	lcd.setCursor(0, 3);
+
+	lcd.write(abe, sizeof(abe));
+
+	lcd.setCursor(5, 1);
+
+	lcd.print("Hello");
+
+	lcd.setCursor(10, 2);
+
+	lcd.print("There");
 
 
 }
 
+void lcdDisplayMainInfo() {
+
+	lcd.clear();
+
+	lcd.setCursor(5, 2);
+
+	lcd.print("Hello");
+
+	lcd.setCursor(10, 1);
+
+	lcd.print("There");
+
+	scheduler.remFunc(lcdDisplayCMInfo);
+
+	scheduler.addFunc(lcdDisplayCMInfo, 125, 0);
+
+
+
+}
+
+void lcdDisplayCMInfo() {
+
+	lcd.setCursor(1, 4);
+
+	lcd.print(currentMillis);
+
+}
+
+void displayManager(int display) {
+	switch (display) {
+	case 0:
+		lcdCreateCustomCharacters();
+		lcdDisplayInitialMessage();
+		break;
+
+	case 1:
+		//lcdCreateCustomCharacters();
+		lcdDisplayMainInfo();
+		break;
+	}
+}
+
+
 void setup() {
+
+	lcd.clear();
+
 	Serial.begin(9600); // setup Serial for debug
-	while (!Serial);
-	delay(500);
+	//while (!Serial);
+	//delay(500);
 
 
 	Serial.print("Sketch:   ");   Serial.println(__FILE__);
@@ -157,12 +247,11 @@ void setup() {
 
 	Serial.print(F("."));
 
-	createCustomCharacters();
+	lcd.clear(); // clear any old data on the lcd
 
 	Serial.print(F("."));
 
-	lcd.clear(); // clear any old data on the lcd
-
+	displayManager(0);
 
 	Serial.println(F(" Done"));
 
@@ -183,21 +272,61 @@ void setup() {
 
 	delay(SETUPINFOPAUSE);
 
+	/////////////////////////////////////////////////////////////////////////////////////////////
+	Serial.print(" - Scheduler ");
+
+	//
+	// scheduler execute once at specified time (ms)
+	//
+	//scheduler.addFunc(buttonOutput2, 20000, 1);
+
+	Serial.print(".");
+
+
+	//
+	// scheduler keep executing after every specified time (ms)
+	//
+	//scheduler.addFunc(blinkOnboardLED, 1000);
+
+	Serial.print(".");
+
+
+	scheduler.addFunc(lcdDisplayMainInfo, 8500, 1);
+	//scheduler.addFunc(lcd.clear, 2500, 0);
+	//scheduler.addFunc(buttonOutput4, 50);
+	//scheduler.addFunc(buttonOutput3, 8000);
+
+	//PS4.attachOnConnect(controllerConnected);
+
+	Serial.print(".");
+
+
+	//PS4.attachOnDisconnect(controllerDisconnected);
+
+	Serial.print(".");
+
+	Serial.println(" Done");
+	delay(SETUPINFOPAUSE);
 
 }
 
+
+
+
 void loop() {
 	
+	currentMillis = millis();
+	loopcount++;
 
 	//sensors.requestTemperatures(); // send data asking for temperature to DS18B20
-	lcd.setCursor(0, 0); // set the lcd cursor for celsius temperature
-	lcd.print("Temp C: "); // print explanation of following data
+	//lcd.setCursor(0, 0); // set the lcd cursor for celsius temperature
+	//lcd.print("Temp C: "); // print explanation of following data
   //  lcd.print(sensors.getTempCByIndex(0)); // print the degrees in celsius
-	lcd.print("       "); // print spaces to blank out any remanants of data
-	lcd.setCursor(0, 1); // set the lcd for farenheit temperature
-	lcd.print("Temp F: "); // print explanation of following data
+	//lcd.print("       "); // print spaces to blank out any remanants of data
+	//lcd.setCursor(0, 1); // set the lcd for farenheit temperature
+	//lcd.print("Temp F: "); // print explanation of following data
   //  lcd.print(DallasTemperature::toFahrenheit(sensors.getTempCByIndex(0))); // Convert tempC to Fahrenheit and print it
-	lcd.print("       "); // print spaces to blank out any remanants of data
+	//lcd.print("       "); // print spaces to blank out any remanants of data
 
   /*
 	sensors.requestTemperatures(); // send data asking for temperature to DS18B20
@@ -213,4 +342,42 @@ void loop() {
 	lcd.print(IOL); // print light levels
 	lcd.print("       "); // print spaces to blank out any remanants of data
   */
+	scheduler.execute(currentMillis);
+
+	if (currentMillis - lastMillis > 1000 /*&& 1 == 0*/) {
+
+		Serial.println(
+			" CM:" + String(currentMillis)
+			//+ " CC:" + String(controllerConnected)
+			+ " LC:" + String(loopcount)
+			//+ " SP0:" + String(allServos[0].currentpos)
+			//+ " rnd:" + String(rndc)
+			//+ " DPE:" + String(bPanelsOutputEnabled)
+			//+ " DHE:" + String(bHolosOutputEnabled)
+			//+ " SS:" + String(sequence_started)
+			//+ " STO:" + String(seq_timeout)
+			//+ " SST:" + String(sequence_step)
+			//+ " SSL:" + String(sequence_length)
+			//+ " STG:" + String(stageDisplay)
+			//+" LED:" + String(onFlag)
+			//+ " TS:" + String(mesh.scheduler.size())
+			//+ " FM:" + String( feetMotorStateEnabled )
+			//+ " DP:" + String( domePowerStateEnabled )
+			//+ " DPV:" + String( currentDomePowerValue )
+			//+ " DPV:" + String( targetDomePowerValue )
+			//      + " LN:" + String( colourNextLED.val )
+			//+ " MFS:" + String(_motorFailSafe)
+
+			//+ " J0H:" + String(dataIn._joy0HorzValue )
+			//+ " J0V:" + String(dataIn._joy0VertValue )
+			//+ " J0V:" + String(_joy0VertPos )
+
+
+		);
+
+		lastMillis = currentMillis;
+		loopcount = 0;
+	}
+
+
 }

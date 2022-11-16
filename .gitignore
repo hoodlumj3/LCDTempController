@@ -1,0 +1,42 @@
+﻿# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+/sketch_nov16a/sketch_nov16a.ino
+/LCDTempController/Debug/LCDTempController.with_bootloader.hex
+/LCDTempController/Debug/LCDTempController.ino.with_bootloader.hex
+/LCDTempController/Debug/LCDTempController.ino.hex
+/LCDTempController/Debug/LCDTempController.ino.elf
+/LCDTempController/Debug/LCDTempController.ino.eep
+/LCDTempController/Debug/LCDTempController.hex
+/LCDTempController/Debug/LCDTempController.elf
+/LCDTempController/Debug/LCDTempController.eep
+/LCDTempController/Debug/board.buildinfo

@@ -112,7 +112,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Modules\functionEnable\functionEnable.h" />
     <ClInclude Include="__vm\.LCDTempController.vsarduino.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Modules\functionEnable\functionEnable.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

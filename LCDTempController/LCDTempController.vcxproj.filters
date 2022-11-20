@@ -24,9 +24,15 @@
     <ClInclude Include="Modules\functionEnable\functionEnable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Modules\ButtonDebounce.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Modules\functionEnable\functionEnable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Modules\ButtonDebounce.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

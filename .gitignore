@@ -31,12 +31,4 @@
 *.out
 *.app
 /sketch_nov16a/sketch_nov16a.ino
-/LCDTempController/Debug/LCDTempController.with_bootloader.hex
-/LCDTempController/Debug/LCDTempController.ino.with_bootloader.hex
-/LCDTempController/Debug/LCDTempController.ino.hex
-/LCDTempController/Debug/LCDTempController.ino.elf
-/LCDTempController/Debug/LCDTempController.ino.eep
-/LCDTempController/Debug/LCDTempController.hex
-/LCDTempController/Debug/LCDTempController.elf
-/LCDTempController/Debug/LCDTempController.eep
-/LCDTempController/Debug/board.buildinfo
+/**/Debug/**
